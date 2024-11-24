@@ -5,13 +5,17 @@ inputs:
     description: "Arguments passed to the builder"
     required: true
     default: "--help"
+  pull:
+    description: "Pull the latest version of builder (set to `false` for testing)"
+    required: false
+    default: "true"
 runs:
   using: "composite"
   steps:
     - name: Install Cosign
-      uses: sigstore/cosign-installer@v3.6.0
+      uses: sigstore/cosign-installer@v3.7.0
       with:
-        cosign-release: "v2.2.3"
+        cosign-release: "v2.4.0"
 
     - shell: bash
       id: version
@@ -23,6 +27,7 @@ runs:
         echo "version=${input}" >> "$GITHUB_OUTPUT"
 
     - shell: bash
+      if: ${{ inputs.pull == 'true' }}
       run: |
         docker pull ghcr.io/home-assistant/aarch64-builder:${{ steps.version.outputs.version }}
 
